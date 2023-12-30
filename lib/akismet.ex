@@ -70,15 +70,17 @@ defmodule Akismet do
   - or `:error`: could not access the Akismet endpoint.
   """
   def check_comment(base, user_ip, params) do
+    get_header = &(List.keyfind(&1, &2, 0, {&2, ""}) |> elem(1))
+
     case main_post("comment-check", base, user_ip, params) do
       {:ok, %{body: "true", headers: headers}} ->
-        if get_header(headers, "X-akismet-pro-tip") == "discard", do: :discard_spam, else: :spam
+        if get_header.(headers, "X-akismet-pro-tip") == "discard", do: :discard_spam, else: :spam
 
       {:ok, %{body: "false"}} ->
         :ham
 
       {:ok, %{body: "invalid", headers: headers}} ->
-        {:akismet_error, get_header(headers, "X-akismet-debug-help")}
+        {:akismet_error, get_header.(headers, "X-akismet-debug-help")}
 
       {:error, _} ->
         :error
@@ -157,14 +159,5 @@ defmodule Akismet do
 
   defp main_post(endpoint, base, user_ip, params) do
     post(endpoint, [{:api_key, base.key}, {:blog, base.blog}, {:user_ip, user_ip} | params])
-  end
-
-  defp get_header(headers, header_key) do
-    is_header = fn
-      {^header_key, _} -> true
-      _ -> false
-    end
-
-    Enum.find(headers, "", is_header)
   end
 end
