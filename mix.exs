@@ -14,8 +14,8 @@ defmodule Akismet.MixProject do
       package: [
         name: "akismet",
         licenses: ["MIT"],
-        links: %{"GitHub" => "https://github.com/PerpetualCreativity/akismet"},
-      ],
+        links: %{"GitHub" => "https://github.com/PerpetualCreativity/akismet"}
+      ]
     ]
   end
 
@@ -31,7 +31,7 @@ defmodule Akismet.MixProject do
     [
       {:httpoison, "~> 2.2"},
       {:jason, "~> 1.4"},
-      {:ex_doc, "~> 0.25", only: :dev},
+      {:ex_doc, "~> 0.25", only: :dev}
     ]
   end
 end

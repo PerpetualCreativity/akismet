@@ -17,9 +17,18 @@ defmodule AkismetTest do
   end
 
   test "check comment", state do
-    assert Akismet.check_comment(state.strct, "127.0.0.1", [comment_author_email: "akismet-guaranteed-spam@example.com"]) == :spam
-    assert Akismet.check_comment(state.strct, "127.0.0.1", [comment_author: "akismet-guaranteed-spam"]) == :spam
-    assert Akismet.check_comment(state.strct, "127.0.0.1", [user_role: "administrator", is_test: "true"]) == :ham
+    assert Akismet.check_comment(state.strct, "127.0.0.1",
+             comment_author_email: "akismet-guaranteed-spam@example.com"
+           ) == :spam
+
+    assert Akismet.check_comment(state.strct, "127.0.0.1",
+             comment_author: "akismet-guaranteed-spam"
+           ) == :spam
+
+    assert Akismet.check_comment(state.strct, "127.0.0.1",
+             user_role: "administrator",
+             is_test: "true"
+           ) == :ham
   end
 
   test "submit spam and ham", state do

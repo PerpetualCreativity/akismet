@@ -39,20 +39,22 @@ defmodule Akismet do
   def init(blog) do
     case System.fetch_env("AKISMET_KEY") do
       {:ok, key} ->
-        case post("verify-key", [api_key: key, blog: blog]) do
+        case post("verify-key", api_key: key, blog: blog) do
           {:ok, %{body: "valid"}} -> {:ok, %Akismet{key: key, blog: blog}}
           {:ok, %{body: "invalid"}} -> :invalid_key
           {:error, _} -> :error
         end
-      :error -> :key_not_set
+
+      :error ->
+        :key_not_set
     end
   end
- 
+
   @doc """
   Check a comment.
 
   Arguments:
-  
+
   - the struct returned by `init/1`,
   - the IP of the commenter,
   - and [extra parameters](https://akismet.com/developers/comment-check/) in the format
@@ -69,10 +71,17 @@ defmodule Akismet do
   """
   def check_comment(base, user_ip, params) do
     case main_post("comment-check", base, user_ip, params) do
-      {:ok, %{body: "true", headers: headers}} -> if get_header(headers, "X-akismet-pro-tip") == "discard", do: :discard_spam, else: :spam
-      {:ok, %{body: "false"}} -> :ham
-      {:ok, %{body: "invalid", headers: headers}} -> {:akismet_error, get_header(headers, "X-akismet-debug-help")}
-      {:error, _} -> :error
+      {:ok, %{body: "true", headers: headers}} ->
+        if get_header(headers, "X-akismet-pro-tip") == "discard", do: :discard_spam, else: :spam
+
+      {:ok, %{body: "false"}} ->
+        :ham
+
+      {:ok, %{body: "invalid", headers: headers}} ->
+        {:akismet_error, get_header(headers, "X-akismet-debug-help")}
+
+      {:error, _} ->
+        :error
     end
   end
 
@@ -80,7 +89,7 @@ defmodule Akismet do
   Submit spam.
 
   Arguments:
-  
+
   - the struct returned by `init/1`,
   - the IP of the commenter,
   - and [extra parameters](https://akismet.com/developers/comment-check/) in the format
@@ -98,7 +107,7 @@ defmodule Akismet do
   Submit ham.
 
   Arguments:
-  
+
   - the struct returned by `init/1`,
   - the IP of the commenter,
   - and [extra parameters](https://akismet.com/developers/comment-check/) in the format
@@ -141,7 +150,9 @@ defmodule Akismet do
   end
 
   defp post(endpoint, form, version \\ "1.1") do
-    HTTPoison.post("https://rest.akismet.com/" <> version <> "/" <> endpoint, {:form, form}, [{"Content-Type", "application/x-www-form-urlencoded"}])
+    HTTPoison.post("https://rest.akismet.com/" <> version <> "/" <> endpoint, {:form, form}, [
+      {"Content-Type", "application/x-www-form-urlencoded"}
+    ])
   end
 
   defp main_post(endpoint, base, user_ip, params) do
@@ -153,6 +164,7 @@ defmodule Akismet do
       {^header_key, _} -> true
       _ -> false
     end
+
     Enum.find(headers, "", is_header)
   end
 end
