@@ -1,8 +1,8 @@
-# Akismet
+# Akismet for Elixir ![test status](https://github.com/PerpetualCreativity/akismet/actions/workflows/ci.yml/badge.svg)
 
 Easily check comments with Akismet from Elixir.
 
-[Check the docs](https://hexdocs.pm/akismet/Akismet.html), which include examples and details on how to use Akismet.
+[The docs](https://hexdocs.pm/akismet/Akismet.html) include examples and details on how to use this library.
 
 ## Testing
 
