@@ -6,16 +6,15 @@ jobs:
     name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
     strategy:
       matrix:
-        otp: ['20.3', '21.3', '22.2']
-        elixir: ['1.8.2', '1.9.4']
+        otp: ['24.3', '25.3', '26.2']
+        elixir: ['1.15.1', '1.15.7', '1.16.0']
     steps:
       - uses: actions/checkout@v3
       - uses: erlef/setup-beam@v1
         with:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
-      - shell: bash
-        env:
-          TEST_AKISMET_ELIXIR_KEY: ${{ secrets.TestAkismetKey }}
       - run: mix deps.get
-      - run: mix test
+      - env:
+          TEST_AKISMET_ELIXIR_KEY: ${{ secrets.TestAkismetKey }}
+        run: mix test
